@@ -31,3 +31,33 @@ resource "aws_sns_topic_policy" "allow_eventbridge" {
     }]
   })
 }
+
+resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
+  alarm_name          = "lambda-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 0
+
+  dimensions = {
+    FunctionName = aws_lambda_function.video_lambda.function_name
+  }
+
+  alarm_actions = [aws_sns_topic.mediaconvert_completion.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "mediaconvert_error_alarm" {
+  alarm_name          = "mediaconvert-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "JobsErrored"
+  namespace           = "AWS/MediaConvert"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 0
+
+  alarm_actions = [aws_sns_topic.mediaconvert_completion.arn]
+}
