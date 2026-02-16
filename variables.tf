@@ -10,3 +10,7 @@ variable "bucket_name" {
 variable "lambda_function_name" {
   default = "video-transcode-lambda"
 }
+
+variable "notification_email" {
+  type = string
+}
