@@ -27,24 +27,24 @@ resource "aws_iam_policy" "lambda_policy" {
       {
         Effect = "Allow"
         Action = [
-          "mediaconvert:*"
+          "mediaconvert:CreateJob",
+          "mediaconvert:DescribeEndpoints"
         ]
         Resource = "*"
       },
       {
         Effect = "Allow"
         Action = [
-          "s3:*"
+          "s3:GetObject"
         ]
-        Resource = [
-          aws_s3_bucket.video_bucket.arn,
-          "${aws_s3_bucket.video_bucket.arn}/*"
-        ]
+        Resource = "${aws_s3_bucket.video_bucket.arn}/uploads/*"
       },
       {
         Effect = "Allow"
-        Action = "iam:PassRole"
-        Resource = "*"
+        Action = [
+          "iam:PassRole"
+        ]
+        Resource = aws_iam_role.mediaconvert_role.arn
       }
     ]
   })
