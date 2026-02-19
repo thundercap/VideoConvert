@@ -209,20 +209,6 @@ workload control
 
 ------------------------------------------------------------------------
 
-## Recommended Enhancements
-
-For production-grade OTT deployment:
-
--   Use separate input/output buckets
--   Enable SSE-KMS
--   Add CloudFront with signed URLs
--   Use MediaConvert Job Templates
--   Add DLQ to Lambda
--   Add Step Functions for orchestration
--   Implement tagging strategy for cost tracking
-
-------------------------------------------------------------------------
-
 ## Testing Strategy
 
 1.  Upload test file under `/uploads/`
