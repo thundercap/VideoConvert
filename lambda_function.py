@@ -27,32 +27,25 @@ else:
     mc = boto3.client("mediaconvert", region_name=REGION)
     endpoints = mc.describe_endpoints()
     endpoint_url = endpoints["Endpoints"][0]["Url"]
-
     mediaconvert_client = boto3.client(
         "mediaconvert",
         region_name=REGION,
         endpoint_url=endpoint_url
     )
 
-
 # ---------- Helper: Generate ABR Outputs ----------
 
 def generate_outputs():
     return [
-
         # 1080p
         create_output("_1080p", 1920, 1080, 6000000, 8, 128000),
-
         # 720p
         create_output("_720p", 1280, 720, 3500000, 8, 128000),
-
         # 480p
         create_output("_480p", 854, 480, 2000000, 7, 96000),
-
         # 360p
         create_output("_360p", 640, 360, 1000000, 7, 96000),
     ]
-
 
 def create_output(name_modifier, width, height, max_bitrate, qvbr_quality, audio_bitrate):
     return {
@@ -94,7 +87,6 @@ def create_output(name_modifier, width, height, max_bitrate, qvbr_quality, audio
         }
     }
 
-
 # ---------- Lambda Handler ----------
 
 def lambda_handler(event, context):
@@ -102,7 +94,6 @@ def lambda_handler(event, context):
         records = event.get("Records", [])
 
         for record in records:
-
             bucket = record["s3"]["bucket"]["name"]
             key = urllib.parse.unquote_plus(record["s3"]["object"]["key"])
 
@@ -146,7 +137,6 @@ def lambda_handler(event, context):
             }
 
             response = mediaconvert_client.create_job(**job_settings)
-
             job_id = response["Job"]["Id"]
             logger.info(f"MediaConvert Job Created: {job_id}")
 
@@ -157,7 +147,6 @@ def lambda_handler(event, context):
 
     except Exception as e:
         logger.error(f"Error processing MediaConvert job: {str(e)}")
-
         return {
             "statusCode": 500,
             "body": json.dumps({

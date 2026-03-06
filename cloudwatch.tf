@@ -2,10 +2,10 @@ resource "aws_cloudwatch_event_rule" "mediaconvert_complete" {
   name = "mediaconvert-job-complete"
 
   event_pattern = jsonencode({
-    "source": ["aws.mediaconvert"],
-    "detail-type": ["MediaConvert Job State Change"],
-    "detail": {
-      "status": ["COMPLETE", "ERROR"]
+    "source" : ["aws.mediaconvert"],
+    "detail-type" : ["MediaConvert Job State Change"],
+    "detail" : {
+      "status" : ["COMPLETE", "ERROR"]
     }
   })
 }
