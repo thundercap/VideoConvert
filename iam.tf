@@ -18,6 +18,12 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# IMPROVEMENT #13: Attach X-Ray write permissions so active tracing works
+resource "aws_iam_role_policy_attachment" "lambda_xray" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+}
+
 resource "aws_iam_policy" "lambda_policy" {
   name = "lambda-mediaconvert-policy"
 
@@ -34,16 +40,20 @@ resource "aws_iam_policy" "lambda_policy" {
       },
       {
         Effect = "Allow"
-        Action = [
-          "s3:GetObject"
-        ]
+        Action = ["s3:GetObject"]
+        # Scoped only to uploads/ — Lambda never needs to read processed/ or bucket root
         Resource = "${aws_s3_bucket.video_bucket.arn}/uploads/*"
       },
       {
         Effect = "Allow"
-        Action = [
-          "iam:PassRole"
-        ]
+        Action = ["s3:HeadObject"]
+        # IMPROVEMENT #22: HeadObject needed for the zero-byte file size guard
+        Resource = "${aws_s3_bucket.video_bucket.arn}/uploads/*"
+      },
+      {
+        Effect = "Allow"
+        Action = ["iam:PassRole"]
+        # Scoped tightly to the MediaConvert role ARN only — not iam:PassRole on *
         Resource = aws_iam_role.mediaconvert_role.arn
       }
     ]

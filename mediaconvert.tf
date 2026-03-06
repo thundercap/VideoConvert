@@ -20,17 +20,13 @@ resource "aws_iam_policy" "mediaconvert_s3_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject"
-        ]
+        Effect   = "Allow"
+        Action   = ["s3:GetObject"]
         Resource = "${aws_s3_bucket.video_bucket.arn}/uploads/*"
       },
       {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject"
-        ]
+        Effect   = "Allow"
+        Action   = ["s3:PutObject"]
         Resource = "${aws_s3_bucket.video_bucket.arn}/processed/*"
       }
     ]
