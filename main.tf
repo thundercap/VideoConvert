@@ -1,19 +1,18 @@
 terraform {
-  # IMPROVEMENT #17: Pin the AWS provider version so a major version bump (e.g. v6)
-  # can't silently break the configuration on the next `terraform init`.
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.0"
+    }
   }
 
   required_version = ">= 1.3"
 
-  # IMPROVEMENT #18: Remote state backend — keeps terraform.tfstate in S3 with
-  # DynamoDB locking so state is never lost and concurrent applies are serialised.
-  # Uncomment and fill in your own bucket/table names before using in production.
-  #
+  # Remote state backend — uncomment for production.
   # backend "s3" {
   #   bucket         = "your-terraform-state-bucket"
   #   key            = "videoconvert/terraform.tfstate"
@@ -36,3 +35,13 @@ provider "aws" {
 }
 
 data "aws_caller_identity" "current" {}
+
+# ── Locals ────────────────────────────────────────────────────────────────────
+# Resolve the effective job template ARN (#7):
+#   - If the user provides an explicit var.job_template_arn, use that (e.g. an
+#     existing template from another stack or a manually tuned one).
+#   - Otherwise use the template created by this configuration so that Lambda
+#     always delegates encoding settings to MediaConvert rather than its own code.
+locals {
+  effective_job_template_arn = var.job_template_arn != "" ? var.job_template_arn : aws_media_convert_job_template.hls_abr.arn
+}
